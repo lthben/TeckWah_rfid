@@ -1,8 +1,8 @@
 /* Author: Benjamin Low
- * Date: June 2015
+ * Last updated: 5 Oct 2015
  * Description: Code adapted from http://bildr.org/2011/02/rfid-arduino/
  * Uses the Sparkfun ID-20 RFID reader connected to an Arduino. See above
- * URL link for the wiring connections. Blinks some LEDS if any of the 
+ * URL link for the wiring connections. Blinks some LEDS if any of the
  * pre-registered RFID tags are read. One RFID reader per Arduino.
  */
 
@@ -13,6 +13,7 @@ long curr_led2_time, curr_led3_time, curr_led4_time, curr_led5_time;
 boolean is_led2_on, is_led3_on, is_led4_on, is_led5_on;
 
 int RFIDResetPin = 13;
+int tag_number, prev_tag_number;
 
 //Register your RFID tags here
 char tag1[13] = "4500F726DB4F";
@@ -53,8 +54,14 @@ void loop() {
     }
   }
 
-  checkTag(tagString); //Check if it is a match
-  
+  checkTag(tagString); //Check if it is a match and updates the current tag number
+
+  if (tag_number != prev_tag_number) { //only sends when a tag has changed
+    Serial.print("tag");
+    Serial.println(tag_number);
+    prev_tag_number = tag_number;
+  }
+
   clearTag(tagString); //Clear the char of all value
 
   resetReader(); //reset both RFID readers
@@ -66,23 +73,29 @@ void checkTag(char tag[]) {
   ///////////////////////////////////
 
   if (strlen(tag) == 0) {
-        turn_off_leds();
-        return; //empty, no need to contunue
+    turn_off_leds();
+    return; //empty, no need to contunue
   }
 
   if (compareTag(tag, tag1)) { // if matched tag1, do this
     lightLED(2);
+    tag_number = 2;
 
   } else if (compareTag(tag, tag2)) { //if matched tag2, do this
     lightLED(3);
-    
+    tag_number = 3;
+
   } else if (compareTag(tag, tag3)) {
-        lightLED(4);
+    lightLED(4);
+    tag_number = 4;
+
   } else if (compareTag(tag, tag4)) {
-        lightLED(5);
+    lightLED(5);
+    tag_number = 5;
   }
   else {
-    Serial.println(tag); //read out any unknown tag  
+    //Serial.print("unknown tag: ");
+    //Serial.println(tag); //read out any unknown tag
   }
 }
 
@@ -90,75 +103,73 @@ void lightLED(int pin) {
   ///////////////////////////////////
   //Turn on LED on pin "pin" for 250ms
   ///////////////////////////////////
-  Serial.println(pin);
-
   if (pin == 2) {
-        if (is_led2_on == false) {
-                digitalWrite(2, HIGH);
-                curr_led2_time = millis();
-                is_led2_on = true;
-        }
-        else if (millis() - curr_led2_time > LED_DELAY) {
-                digitalWrite(2, LOW);
-                is_led2_on = false;
-        }
+    if (is_led2_on == false) {
+      digitalWrite(2, HIGH);
+      curr_led2_time = millis();
+      is_led2_on = true;
+    }
+    else if (millis() - curr_led2_time > LED_DELAY) {
+      digitalWrite(2, LOW);
+      is_led2_on = false;
+    }
   }
 
   if (pin == 3) {
-        if (is_led3_on == false) {
-                digitalWrite(3, HIGH);
-                curr_led3_time = millis();
-                is_led3_on = true;
-        }
-        else if (millis() - curr_led3_time > LED_DELAY) {
-                digitalWrite(3, LOW);
-                is_led3_on = false;
-        }
+    if (is_led3_on == false) {
+      digitalWrite(3, HIGH);
+      curr_led3_time = millis();
+      is_led3_on = true;
+    }
+    else if (millis() - curr_led3_time > LED_DELAY) {
+      digitalWrite(3, LOW);
+      is_led3_on = false;
+    }
   }
 
-    if (pin == 4) {
-        if (is_led4_on == false) {
-                digitalWrite(4, HIGH);
-                curr_led4_time = millis();
-                is_led4_on = true;
-        }
-        else if (millis() - curr_led4_time > LED_DELAY) {
-                digitalWrite(4, LOW);
-                is_led4_on = false;
-        }
+  if (pin == 4) {
+    if (is_led4_on == false) {
+      digitalWrite(4, HIGH);
+      curr_led4_time = millis();
+      is_led4_on = true;
+    }
+    else if (millis() - curr_led4_time > LED_DELAY) {
+      digitalWrite(4, LOW);
+      is_led4_on = false;
+    }
   }
 
-    if (pin == 5) {
-        if (is_led5_on == false) {
-                digitalWrite(5, HIGH);
-                curr_led5_time = millis();
-                is_led5_on = true;
-        }
-        else if (millis() - curr_led5_time > LED_DELAY) {
-                digitalWrite(5, LOW);
-                is_led5_on = false;
-        }
+  if (pin == 5) {
+    if (is_led5_on == false) {
+      digitalWrite(5, HIGH);
+      curr_led5_time = millis();
+      is_led5_on = true;
+    }
+    else if (millis() - curr_led5_time > LED_DELAY) {
+      digitalWrite(5, LOW);
+      is_led5_on = false;
+    }
   }
 }
 
 void turn_off_leds() {
-        digitalWrite(2, LOW);
-        digitalWrite(3, LOW);
-        digitalWrite(4, LOW);
-        digitalWrite(5, LOW);
-        is_led2_on = false;
-        is_led3_on = false;
-        is_led4_on = false;
-        is_led5_on = false;
+  digitalWrite(2, LOW);
+  digitalWrite(3, LOW);
+  digitalWrite(4, LOW);
+  digitalWrite(5, LOW);
+  is_led2_on = false;
+  is_led3_on = false;
+  is_led4_on = false;
+  is_led5_on = false;
 }
 
 void resetReader() {
   ///////////////////////////////////
   //Reset the RFID reader to read again.
   ///////////////////////////////////
-        digitalWrite(RFIDResetPin, LOW);
-        digitalWrite(RFIDResetPin, HIGH);
-        delay(RESET_DELAY);
+  digitalWrite(RFIDResetPin, LOW);
+  digitalWrite(RFIDResetPin, HIGH);
+  delay(RESET_DELAY);
 }
 
 void clearTag(char one[]) {
