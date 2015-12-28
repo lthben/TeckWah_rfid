@@ -94,8 +94,8 @@ void checkTag(char tag[]) {
     tag_number = 5;
   }
   else {
-    //Serial.print("unknown tag: ");
-    //Serial.println(tag); //read out any unknown tag
+    Serial.print("unknown tag: ");
+    Serial.println(tag); //read out any unknown tag
   }
 }
 
