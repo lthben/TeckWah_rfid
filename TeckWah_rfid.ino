@@ -1,9 +1,11 @@
 /* Author: Benjamin Low
- * Last updated: 5 Oct 2015
+ *
  * Description: Code adapted from http://bildr.org/2011/02/rfid-arduino/
  * Uses the Sparkfun ID-20 RFID reader connected to an Arduino. See above
  * URL link for the wiring connections. Blinks some LEDS if any of the
  * pre-registered RFID tags are read. One RFID reader per Arduino.
+ *
+ * Last updated: 23 Jan 2016
  */
 
 const long LED_DELAY = 250;
@@ -16,8 +18,8 @@ int RFIDResetPin = 13;
 int tag_number, prev_tag_number;
 
 //Register your RFID tags here
-char tag1[13] = "4500F726DB4F";
-char tag2[13] = "4500B89EE586";
+char tag1[13] = "50009EC3676A";
+char tag2[13] = "4B0082C35359";
 char tag3[13] = "4D006A6E4D04";
 char tag4[13] = "50009EEA91B5";
 
@@ -27,7 +29,7 @@ void setup() {
   pinMode(RFIDResetPin, OUTPUT);
   digitalWrite(RFIDResetPin, HIGH);
 
-  //ONLY NEEDED IF CONTROLING THESE PINS - EG. LEDs
+  //LEDs
   pinMode(2, OUTPUT);
   pinMode(3, OUTPUT);
   pinMode(4, OUTPUT);
@@ -57,9 +59,10 @@ void loop() {
   checkTag(tagString); //Check if it is a match and updates the current tag number
 
   if (tag_number != prev_tag_number) { //only sends when a tag has changed
-    Serial.print("tag");
-    Serial.println(tag_number);
-    prev_tag_number = tag_number;
+ 
+          Serial.print("tag");
+          Serial.println(tag_number);
+          prev_tag_number = tag_number;  
   }
 
   clearTag(tagString); //Clear the char of all value
@@ -79,23 +82,24 @@ void checkTag(char tag[]) {
 
   if (compareTag(tag, tag1)) { // if matched tag1, do this
     lightLED(2);
-    tag_number = 2;
+    tag_number = 1;
 
-  } else if (compareTag(tag, tag2)) { //if matched tag2, do this
+  } else if (compareTag(tag, tag2)) { 
     lightLED(3);
-    tag_number = 3;
+    tag_number = 2;
 
   } else if (compareTag(tag, tag3)) {
     lightLED(4);
-    tag_number = 4;
+    tag_number = 3;
 
   } else if (compareTag(tag, tag4)) {
     lightLED(5);
-    tag_number = 5;
+    tag_number = 4;
   }
   else {
-    Serial.print("unknown tag: ");
-    Serial.println(tag); //read out any unknown tag
+    //unknown tag
+      Serial.print("unknown tag: ");
+      Serial.println(tag); //read out any unknown tag
   }
 }
 
