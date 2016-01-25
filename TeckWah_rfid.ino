@@ -5,8 +5,18 @@
  * URL link for the wiring connections. Blinks some LEDS if any of the
  * pre-registered RFID tags are read. One RFID reader per Arduino.
  *
- * Last updated: 23 Jan 2016
+ * Last updated: 25 Jan 2016
  */
+
+//USER DEFINED SETTINGS
+boolean DEBUG = false;
+const int thisRFIDBoxNum = 2; //1 is for the left box, 2 for the right, in the drawer
+
+//Register your RFID tags here
+char tag1[13] = "4D006A6E4D04"; //A1
+char tag2[13] = "50009EF2023E"; //A2
+char tag3[13] = "50009EC3676A"; //V1
+char tag4[13] = "4B0082C35359"; //V2
 
 const long LED_DELAY = 250;
 const long RESET_DELAY = 150;
@@ -16,12 +26,6 @@ boolean is_led2_on, is_led3_on, is_led4_on, is_led5_on;
 
 int RFIDResetPin = 13;
 int tag_number, prev_tag_number;
-
-//Register your RFID tags here
-char tag1[13] = "50009EC3676A";
-char tag2[13] = "4B0082C35359";
-char tag3[13] = "4D006A6E4D04";
-char tag4[13] = "50009EEA91B5";
 
 void setup() {
   Serial.begin(9600);
@@ -34,6 +38,8 @@ void setup() {
   pinMode(3, OUTPUT);
   pinMode(4, OUTPUT);
   pinMode(5, OUTPUT);
+
+  tag_number = -1; prev_tag_number = -1;
 }
 
 void loop() {
@@ -59,10 +65,20 @@ void loop() {
   checkTag(tagString); //Check if it is a match and updates the current tag number
 
   if (tag_number != prev_tag_number) { //only sends when a tag has changed
- 
-          Serial.print("tag");
+
+        if (thisRFIDBoxNum == 1) {
+            Serial.print("1");
+        } else {
+            Serial.print("2");
+        }
+
+        if (tag_number == -1) {
+            Serial.println("no_tag");
+        } else {
+          Serial.print("tag_");
           Serial.println(tag_number);
-          prev_tag_number = tag_number;  
+        }
+          prev_tag_number = tag_number; 
   }
 
   clearTag(tagString); //Clear the char of all value
@@ -77,29 +93,32 @@ void checkTag(char tag[]) {
 
   if (strlen(tag) == 0) {
     turn_off_leds();
+    tag_number = -1;
     return; //empty, no need to contunue
   }
 
   if (compareTag(tag, tag1)) { // if matched tag1, do this
-    lightLED(2);
+    if (DEBUG) lightLED(2);
     tag_number = 1;
 
   } else if (compareTag(tag, tag2)) { 
-    lightLED(3);
+    if (DEBUG) lightLED(3);
     tag_number = 2;
 
   } else if (compareTag(tag, tag3)) {
-    lightLED(4);
+    if (DEBUG) lightLED(4);
     tag_number = 3;
 
   } else if (compareTag(tag, tag4)) {
-    lightLED(5);
+    if (DEBUG) lightLED(5);
     tag_number = 4;
   }
   else {
     //unknown tag
+    if (DEBUG) {
       Serial.print("unknown tag: ");
       Serial.println(tag); //read out any unknown tag
+    }
   }
 }
 
