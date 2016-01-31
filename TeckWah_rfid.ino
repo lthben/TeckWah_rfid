@@ -13,10 +13,10 @@ boolean DEBUG = false;
 const int thisRFIDBoxNum = 2; //1 is for the left box, 2 for the right, in the drawer
 
 //Register your RFID tags here
-char tag1[13] = "4D006A6E4D04"; //A1
-char tag2[13] = "50009EF2023E"; //A2
-char tag3[13] = "50009EC3676A"; //V1
-char tag4[13] = "4B0082C35359"; //V2
+char tag1[13] = "4B0082BBA7D5"; //A1
+char tag2[13] = "50009E94FDA7"; //A2
+char tag3[13] = "50009EEA91B5"; //V1
+char tag4[13] = "50009EC6E1E9"; //V2
 
 const long LED_DELAY = 250;
 const long RESET_DELAY = 150;
