@@ -5,7 +5,7 @@
  * URL link for the wiring connections. Blinks some LEDS if any of the
  * pre-registered RFID tags are read. One RFID reader per Arduino.
  *
- * Last updated: 25 Jan 2016
+ * Last updated: 3 Feb 2016
  */
 
 //USER DEFINED SETTINGS
@@ -66,19 +66,21 @@ void loop() {
 
   if (tag_number != prev_tag_number) { //only sends when a tag has changed
 
-        if (thisRFIDBoxNum == 1) {
-            Serial.print("1");
-        } else {
-            Serial.print("2");
-        }
-
-        if (tag_number == -1) {
-            Serial.println("no_tag");
-        } else {
-          Serial.print("tag_");
-          Serial.println(tag_number);
-        }
-          prev_tag_number = tag_number; 
+    if (thisRFIDBoxNum == 1) {
+      if (tag_number == -1) {
+        Serial.println("1no_tag");
+      } else if (tag_number == 1) {
+        Serial.println("1tag_1");
+      }
+    } else if (thisRFIDBoxNum == 2) {
+      if (tag_number == -1) {
+        Serial.println("2no_tag");
+      } else {
+        Serial.print("2tag_");
+        Serial.println(tag_number);
+      }
+    }
+    prev_tag_number = tag_number;
   }
 
   clearTag(tagString); //Clear the char of all value
@@ -101,7 +103,7 @@ void checkTag(char tag[]) {
     if (DEBUG) lightLED(2);
     tag_number = 1;
 
-  } else if (compareTag(tag, tag2)) { 
+  } else if (compareTag(tag, tag2)) {
     if (DEBUG) lightLED(3);
     tag_number = 2;
 
